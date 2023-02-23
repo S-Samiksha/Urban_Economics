@@ -1,0 +1,136 @@
+{
+    "bbox": [
+        103.833295,
+        1.282645,
+        103.851288,
+        1.29004
+    ],
+    "metadata": {
+        "attribution": "openrouteservice.org | OpenStreetMap contributors",
+        "engine": {
+            "build_date": "2022-10-21T14:34:31Z",
+            "graph_date": "2023-02-05T14:40:53Z",
+            "version": "6.8.0"
+        },
+        "query": {
+            "coordinates": [
+                [
+                    103.83425,
+                    1.28937
+                ],
+                [
+                    103.85146,
+                    1.28412
+                ]
+            ],
+            "format": "json",
+            "profile": "driving-car"
+        },
+        "service": "routing",
+        "timestamp": 1677068376705
+    },
+    "routes": [
+        {
+            "bbox": [
+                103.833295,
+                1.282645,
+                103.851288,
+                1.29004
+            ],
+            "geometry": "wzzFmcwxRERIZk@zBER]HJc@V}@Ry@Ru@Lm@Py@H]BKJo@TeBBUBWBOLw@NuADq@@KB_@@M@YDy@BSDq@?e@Cq@Ky@_@qAKe@Ii@Ae@?WDYJ]P]N_@d@cA`@y@BGHQBIRe@DKLUd@_ATy@@CD[@EDa@BOBQRk@JSZo@@EHO@Ad@u@p@wAXk@j@cAFOVe@HOR_@JUN[\\u@z@iBHSz@mBJSFOXk@P_@Rc@^y@\\s@HOBG`@w@d@cAd@k@T[NO`@]fAi@f@UtAy@VWHiAGW@}@m@CQAYAO?KAa@AKA_@?G@EF",
+            "segments": [
+                {
+                    "distance": 2498.5,
+                    "duration": 455.2,
+                    "steps": [
+                        {
+                            "distance": 113.0,
+                            "duration": 13.6,
+                            "instruction": "Head west on Havelock Road",
+                            "name": "Havelock Road",
+                            "type": 11,
+                            "way_points": [
+                                0,
+                                4
+                            ]
+                        },
+                        {
+                            "distance": 428.8,
+                            "duration": 76.1,
+                            "instruction": "Continue straight onto Havelock Road",
+                            "name": "Havelock Road",
+                            "type": 6,
+                            "way_points": [
+                                4,
+                                20
+                            ]
+                        },
+                        {
+                            "distance": 473.7,
+                            "duration": 80.8,
+                            "instruction": "Continue straight onto Havelock Road",
+                            "name": "Havelock Road",
+                            "type": 6,
+                            "way_points": [
+                                20,
+                                41
+                            ]
+                        },
+                        {
+                            "distance": 1315.2,
+                            "duration": 258.8,
+                            "instruction": "Continue straight onto Havelock Road",
+                            "name": "Havelock Road",
+                            "type": 6,
+                            "way_points": [
+                                41,
+                                96
+                            ]
+                        },
+                        {
+                            "distance": 48.1,
+                            "duration": 8.7,
+                            "instruction": "Keep left onto Collyer Quay",
+                            "name": "Collyer Quay",
+                            "type": 12,
+                            "way_points": [
+                                96,
+                                98
+                            ]
+                        },
+                        {
+                            "distance": 119.7,
+                            "duration": 17.2,
+                            "instruction": "Turn left onto D'Almeida Street",
+                            "name": "D'Almeida Street",
+                            "type": 0,
+                            "way_points": [
+                                98,
+                                108
+                            ]
+                        },
+                        {
+                            "distance": 0.0,
+                            "duration": 0.0,
+                            "instruction": "Arrive at D'Almeida Street, on the right",
+                            "name": "-",
+                            "type": 10,
+                            "way_points": [
+                                108,
+                                108
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "summary": {
+                "distance": 2498.5,
+                "duration": 455.2
+            },
+            "way_points": [
+                0,
+                108
+            ]
+        }
+    ]
+}
