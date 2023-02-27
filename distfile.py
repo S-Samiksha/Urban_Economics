@@ -7,9 +7,9 @@ filename = '/hdb.csv'
 
 df = pd.read_csv(filepath+filename)
 
-for row in df.iterrows():
-    print(row['lng'])
-    print(row['lat'])
+# for row in df.iterrows():
+#     print(row['lng'])
+#     print(row['lat'])
 lon_1 = 103.7233061
 lat_1 = 1.333889396
 lon_2 = 103.8513
@@ -24,5 +24,14 @@ def router(lon_1,lat_1,lon_2,lat_2):
     route_1 = routes.get("routes")[0]
     # print(f"Overall, the route data is:\n{route_1}\n")
     seconds = route_1['legs'][0]['duration']
-    print(f"Duration: {seconds}sec ({seconds/60:.2f} min )")
-    print(f"The distance is {route_1['legs'][0]['distance']} metres")
+    dist = route_1['legs'][0]['distance']
+    
+    print(f"Duration: {seconds}sec ({seconds/60:.2f} min)")
+    print(f"The distance is {dist} metres")
+    
+    # Pythons returns as a tuple.
+    # Outside of this func, assign them to variables using:
+    # x, y = router(lon_1,lat_1,lon_2,lat_2). x = dist, y = seconds for e.g.
+    return dist, seconds
+    
+router(lon_1,lat_1,lon_2,lat_2)
