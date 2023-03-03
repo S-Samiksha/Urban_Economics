@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+hdb_to_mrt - gb.xlsx
