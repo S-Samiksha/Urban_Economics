@@ -1,4 +1,5 @@
 import time
+import os
 import pandas as pd
 import ast
 #f = open("./busstopv2.txt", "r")
@@ -38,8 +39,8 @@ def director(long,lat):
     reflong = 103.825
     reflat = 1.36076
     overlap = 0.001
-    x = round((long-reflong)*100)
-    y = round((lat-reflat)*100)
+    x = round((long-reflong)*200)
+    y = round((lat-reflat)*200)
     return x,y
 
 busstopdict[['UpDown','LeftRight']] = busstopdict.apply(lambda row: director(row['Longitude'],row['Latitude']),axis=1,result_type='expand')
@@ -65,11 +66,19 @@ busstopdict[['UpDown','LeftRight']] = busstopdict.apply(lambda row: director(row
 #Load all HDB data first:
 
 # UNBLOCK ON FIRST RUN
+tic = time.perf_counter()
+
 allhdb = pd.read_excel("./hdb_to_mrt_all.xlsx", index_col=0,engine='openpyxl') #import fresh data  
+
+toc = time.perf_counter()
+print(f"{toc-tic:.2f}s taken to load the Excel file.")
 #global blocks
 blocks = allhdb[['postal','lng_hdb','lat_hdb']].drop_duplicates()
 blocks[['UpDown','LeftRight']] = blocks.apply(lambda row: director(row['lng_hdb'],row['lat_hdb']),axis=1,result_type='expand')
+blocks = blocks[0:500]
 
+## Small sample trial
+#blocks = blocks[(blocks['UpDown']==-7)&(blocks['LeftRight']==0)]
 # Find relevant long and lat for HDB (do not mix up with MRT)
 print("Blocks DataFrame has shape:",blocks.shape)
 
@@ -81,7 +90,7 @@ def distance(long1,lat1,long2,lat2):
     # 1 deg = 111000m
     dist = 111000*((long2-long1)**2 +(lat2-lat1)**2)**0.5
     return dist
-
+    
 def all_distance(hdblist, busstopdict):
     '''Returns closest bus stop from each HDB block in Singapore'''
     all_dist = {}
@@ -96,8 +105,10 @@ def all_distance(hdblist, busstopdict):
     # fdata - block's long and lat
 
     # For each block in 'blocks'
+    global cumtime
     cumtime = 0
     skipped = 0
+    calc = 0
     for flight, fdata in hdblist.iterrows():
         #print(f"fdata is:\\n{fdata}")
         #print(f"{fdata.shape}")
@@ -108,14 +119,19 @@ def all_distance(hdblist, busstopdict):
         box[flight]=[]
         tic = time.perf_counter()
         for row, busstop in busstopdict.iterrows():
+            calc+=1
+            if calc%20 ==0:
+                print(f'{calc} calculations so far.')
             #print(busstop)
             long2 = busstop['Longitude']
             lat2 = busstop['Latitude']
             #print(f"Long2 is {long2}, Lat2 is {lat2}")
             #print(type(long2),type(lat2))
             if abs(long2-long1) > margin_h:
+                skipped +=1
                 continue
             elif abs(lat2-lat1) > margin_v:
+                skipped +=1
                 continue
             elif busstop['UpDown'] != fdata['UpDown']:
                 skipped +=1
@@ -163,10 +179,12 @@ def all_distance(hdblist, busstopdict):
 
 # Actual code begins here        
 boxes = all_distance(blocks,busstopdict)
+print("Cumulative time so far:",round(cumtime,2))
+
 print(boxes)
-#col = pd.concat(boxes,axis=1)
+col = pd.concat(boxes,axis=0)
 writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='w')
-boxes.to_excel(writer, sheet_name = 'Bus Stop')
+col.to_excel(writer, sheet_name = 'Bus Stop2')
 writer.close()
 ##boxes = all_distance(blocks,busstopdict)
 #print(boxes.head(5))
