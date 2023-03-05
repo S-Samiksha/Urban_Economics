@@ -25,15 +25,13 @@ import openpyxl
 dfs = []
 for i in range(len(collector)):
     dfs.append(pd.DataFrame(collector[i]['value'],index=[i for i in range(len(collector[i]['value']))]))
-print(f"Done with appending {i} DataFrames")
-for i in range(len(collector)):
-    #pass
     print(f"Dataframe {i+1}:\n")
     print(dfs[i])
+print(f"Done with appending {i} DataFrames")
     
-overall = pd.concat(dfs,axis=0)
+busstopdict = pd.concat(dfs,axis=0)
 print("Overall DataFrame:")
-print(overall.shape)
+print(busstopdict.shape)
 
 ### Now that DataFrame is successfully created, output into Excel spreadsheet:"
 from openpyxl.utils.dataframe import dataframe_to_rows
@@ -42,7 +40,7 @@ wb = Workbook()
 ws = wb.active
 
 # For each row in DataFrame
-for r in dataframe_to_rows(overall, index=True, header=True):
+for r in dataframe_to_rows(busstopdict, index=True, header=True):
     ws.append(r)
 
 for cell in ws['A'] + ws[1]:
@@ -69,9 +67,8 @@ def distance(long1,lat1,long2,lat2):
     dist = 111000*((long2-long1)**2 +(lat2-lat1)**2)**0.5
     return dist
 
-def all_distance(flist, overall):
+def all_distance(flist, busstopdict):
     '''Returns closest bus stop from each HDB block in Singapore'''
-    # For each block
     all_dist = {}
     min_dist = {}
     alldist_df = pd.DataFrame()
@@ -82,6 +79,8 @@ def all_distance(flist, overall):
     box ={}
     # flight - index
     # fdata - block's long and lat
+
+    # For each block in 'blocks'
     for flight, fdata in flist.iterrows():
         #print(f"fdata is:\\n{fdata}")
         #print(f"{fdata.shape}")
@@ -91,7 +90,7 @@ def all_distance(flist, overall):
         # Compare row-by-row with all bus stops:
         print(type(long1),type(lat1))
         box[flight]=[]
-        for row, busstop in overall.iterrows():
+        for row, busstop in busstopdict.iterrows():
             #print(busstop)
             long2 = busstop['Longitude']
             lat2 = busstop['Latitude']
@@ -113,27 +112,34 @@ def all_distance(flist, overall):
 
             #dist = math.sqrt(ellipdist(long1, lat1, long, lat)**2)
             #rowdata.insert(loc=0, column='Distance (ft)', value=dist_ft)
+        i=0
         for key, value in box.items():
             #print("The value is",value)
-            min_dist[key]= pd.concat(value,axis=0)
+            try:
+                min_dist[key]= pd.concat(value,axis=0)
+            except ValueError:
+                continue
             min_dist[key].dropna(inplace=True)
             #min_dist[key]=min_dist[key].T
             min_dist[key]['Distance'] = min_dist[key]['Distance'].astype(float)
-            print(f"The keys are {min_dist[key].columns}")
+            #print(f"The keys are {min_dist[key].columns}")
             # Option 1: Keep those within 500m radius
-            min_dist[key]=min_dist[key][min_dist[key]['Distance'] <= 500]
-            
+            min_dist[key]=min_dist[key][min_dist[key]['Distance'] <= 200]
+            if i%50 == 0:
+                print("Progress so far:",min_dist[key])
             # Option 2: For the distance to 2 nearest bus stops
             #min_dist[key] = min_dist[key].nsmallest(2,'Distance')
             print(min_dist[key])
+            i+=1
     return min_dist
-        
-boxes = all_distance(blocks,overall)
+
+# Actual code begins here        
+boxes = all_distance(blocks,busstopdict)
 print(boxes)
 #col = pd.concat(boxes,axis=1)
 writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='w')
 boxes.to_excel(writer, sheet_name = 'Bus Stop')
 writer.close()
-#boxes = all_distance(blocks,overall)
+#boxes = all_distance(blocks,busstopdict)
 print(boxes.head(5))
 
