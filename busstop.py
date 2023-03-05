@@ -120,7 +120,7 @@ def all_distance(hdblist, busstopdict):
         tic = time.perf_counter()
         for row, busstop in busstopdict.iterrows():
             calc+=1
-            if calc%20 ==0:
+            if calc%500 ==0:
                 print(f'{calc} calculations so far.')
             #print(busstop)
             long2 = busstop['Longitude']
@@ -183,8 +183,8 @@ print("Cumulative time so far:",round(cumtime,2))
 
 print(boxes)
 col = pd.concat(boxes,axis=0)
-writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='w')
-col.to_excel(writer, sheet_name = 'Bus Stop2')
+writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='a')
+col.to_excel(writer, sheet_name = 'Busstop0-500')
 writer.close()
 ##boxes = all_distance(blocks,busstopdict)
 #print(boxes.head(5))
