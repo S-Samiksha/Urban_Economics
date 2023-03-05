@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 import ast
 #f = open("./busstopv2.txt", "r")
@@ -25,8 +26,8 @@ import openpyxl
 dfs = []
 for i in range(len(collector)):
     dfs.append(pd.DataFrame(collector[i]['value'],index=[i for i in range(len(collector[i]['value']))]))
-    print(f"Dataframe {i+1}:\n")
-    print(dfs[i])
+    #print(f"Dataframe {i+1}:\n")
+    #print(dfs[i])
 print(f"Done with appending {i} DataFrames")
     
 busstopdict = pd.concat(dfs,axis=0)
@@ -37,42 +38,37 @@ def director(long,lat):
     reflong = 103.825
     reflat = 1.36076
     overlap = 0.001
-    x = 0
-    if long > reflong:
-        x = 'East'
-    else:
-        x = 'West'
-
-    if lat > reflat:
-        y = 'North'
-    else:
-        y = 'South'
+    x = round((long-reflong)*100)
+    y = round((lat-reflat)*100)
     return x,y
 
 busstopdict[['UpDown','LeftRight']] = busstopdict.apply(lambda row: director(row['Longitude'],row['Latitude']),axis=1,result_type='expand')
 
 ### Now that DataFrame is successfully created, output into Excel spreadsheet:"
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl import Workbook
-wb = Workbook()
-ws = wb.active
 
-# For each row in DataFrame
-for r in dataframe_to_rows(busstopdict, index=True, header=True):
-    ws.append(r)
+# This section is for writing Excel SPREADSHEET (not CSV)
+# from openpyxl.utils.dataframe import dataframe_to_rows
+# from openpyxl import Workbook
+# wb = Workbook()
+# ws = wb.active
 
-for cell in ws['A'] + ws[1]:
-    cell.style = 'Pandas'
+# # For each row in DataFrame
+# for r in dataframe_to_rows(busstopdict, index=True, header=True):
+#     ws.append(r)
+
+# for cell in ws['A'] + ws[1]:
+#     cell.style = 'Pandas'
 
 #wb.save("busstop_overall.xlsx")
 
 ### Proceed to compare distance from HDB to each bus stop.
 #Load all HDB data first:
 
+# UNBLOCK ON FIRST RUN
 allhdb = pd.read_excel("./hdb_to_mrt_all.xlsx", index_col=0,engine='openpyxl') #import fresh data  
-global blocks
+#global blocks
 blocks = allhdb[['postal','lng_hdb','lat_hdb']].drop_duplicates()
-blocks[['UpDown','LeftRight']] = busstopdict.apply(lambda row: director(row['lng_hdb'],row['lat_hdb']),axis=1,result_type='expand')
+blocks[['UpDown','LeftRight']] = blocks.apply(lambda row: director(row['lng_hdb'],row['lat_hdb']),axis=1,result_type='expand')
 
 # Find relevant long and lat for HDB (do not mix up with MRT)
 print("Blocks DataFrame has shape:",blocks.shape)
@@ -100,6 +96,8 @@ def all_distance(hdblist, busstopdict):
     # fdata - block's long and lat
 
     # For each block in 'blocks'
+    cumtime = 0
+    skipped = 0
     for flight, fdata in hdblist.iterrows():
         #print(f"fdata is:\\n{fdata}")
         #print(f"{fdata.shape}")
@@ -107,8 +105,8 @@ def all_distance(hdblist, busstopdict):
         long1 = fdata['lng_hdb']
         lat1 = fdata['lat_hdb']
         # Compare row-by-row with all bus stops:
-        print(type(long1),type(lat1))
         box[flight]=[]
+        tic = time.perf_counter()
         for row, busstop in busstopdict.iterrows():
             #print(busstop)
             long2 = busstop['Longitude']
@@ -119,12 +117,23 @@ def all_distance(hdblist, busstopdict):
                 continue
             elif abs(lat2-lat1) > margin_v:
                 continue
+            elif busstop['UpDown'] != fdata['UpDown']:
+                skipped +=1
+                continue
+            elif busstop['LeftRight'] != fdata['LeftRight']:
+                skipped +=1
+                continue
             else:
                 busstop['Distance']  = distance(long1,lat1,long2,lat2)
                 busstop['Postal'] = fdata['postal']
                 #print(f"Bus stop {busstop['Description']}: {busstop['Distance']}m")
                 box[flight].append(pd.DataFrame(busstop).T)
                 #index=[busstop['BusStopCode']
+        print(skipped,"skipped rows.\n")
+        toc = time.perf_counter()
+        cumtime += (toc-tic)
+        print("Cumulative time so far:",round(cumtime,2))
+        print(f"{skipped} additional rows skipped for {flight}.\n\n")
         
         print("Currently the list of bus stops are:",box[flight])
             #print(f"Distance is {dist}m")
@@ -153,12 +162,12 @@ def all_distance(hdblist, busstopdict):
     return min_dist
 
 # Actual code begins here        
-# boxes = all_distance(blocks,busstopdict)
-# print(boxes)
-# #col = pd.concat(boxes,axis=1)
-# writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='w')
-# boxes.to_excel(writer, sheet_name = 'Bus Stop')
-# writer.close()
+boxes = all_distance(blocks,busstopdict)
+print(boxes)
+#col = pd.concat(boxes,axis=1)
+writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='w')
+boxes.to_excel(writer, sheet_name = 'Bus Stop')
+writer.close()
 ##boxes = all_distance(blocks,busstopdict)
 #print(boxes.head(5))
 
