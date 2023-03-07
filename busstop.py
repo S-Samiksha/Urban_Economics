@@ -66,16 +66,15 @@ busstopdict[['UpDown','LeftRight']] = busstopdict.apply(lambda row: director(row
 #Load all HDB data first:
 
 # UNBLOCK ON FIRST RUN
-tic = time.perf_counter()
+tic1 = time.perf_counter()
 
 allhdb = pd.read_excel("./hdb_to_mrt_all.xlsx", index_col=0,engine='openpyxl') #import fresh data  
 
-toc = time.perf_counter()
 print(f"{toc-tic:.2f}s taken to load the Excel file.")
 #global blocks
 blocks = allhdb[['postal','lng_hdb','lat_hdb']].drop_duplicates()
 blocks[['UpDown','LeftRight']] = blocks.apply(lambda row: director(row['lng_hdb'],row['lat_hdb']),axis=1,result_type='expand')
-blocks = blocks[0:500]
+blocks = blocks[500:2000]
 
 ## Small sample trial
 #blocks = blocks[(blocks['UpDown']==-7)&(blocks['LeftRight']==0)]
@@ -184,8 +183,11 @@ print("Cumulative time so far:",round(cumtime,2))
 print(boxes)
 col = pd.concat(boxes,axis=0)
 writer = pd.ExcelWriter('hdb_nearest_bus.xlsx', engine = 'openpyxl',mode='a')
-col.to_excel(writer, sheet_name = 'Busstop0-500')
+col.to_excel(writer, sheet_name = 'Busstop1000')
 writer.close()
+
+toc1 = time.perf_counter()
+print(f"{toc1-tic1} seconds taken.")
 ##boxes = all_distance(blocks,busstopdict)
 #print(boxes.head(5))
 
