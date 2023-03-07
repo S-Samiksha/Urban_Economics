@@ -38,7 +38,7 @@ print(busstopdict.shape)
 def director(long,lat):
     reflong = 103.825
     reflat = 1.36076
-    overlap = 0.001
+    #overlap = 0.001
     x = round((long-reflong)*200)
     y = round((lat-reflat)*200)
     return x,y
@@ -70,7 +70,6 @@ tic1 = time.perf_counter()
 
 allhdb = pd.read_excel("./hdb_to_mrt_all.xlsx", index_col=0,engine='openpyxl') #import fresh data  
 
-print(f"{toc-tic:.2f}s taken to load the Excel file.")
 #global blocks
 blocks = allhdb[['postal','lng_hdb','lat_hdb']].drop_duplicates()
 blocks[['UpDown','LeftRight']] = blocks.apply(lambda row: director(row['lng_hdb'],row['lat_hdb']),axis=1,result_type='expand')
