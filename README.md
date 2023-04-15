@@ -8,7 +8,7 @@ With the introduction of new urban planning policies and the rising rate of hous
 #### Data Cleaning 
 Most of the Data Cleaning was done using Python3 and the codes are available in this repository. 
 
-Data used was obtained from 3 primary sources:
+Data used was obtained from 3 primary sources: <br>
 `Data.gov.sg` <br>
 This is the government’s official website for datasets collected from various government agency. The dataset of interest is ‘Resale flat prices based on registration date from Jan-2017 onwards’, located at https://data.gov.sg/dataset/resale-flat-prices. The dataset used was a compilation of 111,027 HDB resale transactions recorded between January 2017 and September 2020.
 
