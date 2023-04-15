@@ -7,3 +7,25 @@ With the introduction of new urban planning policies and the rising rate of hous
 
 #### Data Cleaning 
 Most of the Data Cleaning was done using Python3 and the codes are available in this repository. 
+
+Data used was obtained from 3 primary sources:
+`Data.gov.sg` <br>
+This is the government’s official website for datasets collected from various government agency. The dataset of interest is ‘Resale flat prices based on registration date from Jan-2017 onwards’, located at https://data.gov.sg/dataset/resale-flat-prices. The dataset used was a compilation of 111,027 HDB resale transactions recorded between January 2017 and September 2020.
+
+`OpenStreetMaps API` <br>
+OpenStreetMaps API is an open-source mapping software that allows users to perform routing operations given starting and ending points. This is used to generate driving distances, for HDB to CBD and for HDB to the nearest MRT. 
+
+`LTA Bus Stop Dynamic API` <br>
+The LTA official website was used to obtain the number of bus stops. The website is located at: https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html. Using latitude and longitude, a radius of 200m was calculated. The number of bus stops falling within the 200m radius was calculated. 
+
+#### Analysis using OLS regressions 
+For this analysis a mix of STATA and Python3 were used. Only Python3 Codes are avaialble in this repository. Check out the folder OLS Analysis!
+
+#### Simple Machine Learning Using Random Forest
+
+Out of curiosity and as an extension, our team decided to explore machine learning to help predict housing prices. For machine learning purposes, we chose to use the Executive Central Dataset. 
+
+A supervised learning model called Random Forest. It uses an ensemble of decision trees  to help make predictions.
+
+
+
